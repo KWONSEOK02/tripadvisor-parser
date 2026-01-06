@@ -61,7 +61,7 @@ if uploaded_file is not None:
             df = pd.DataFrame(all_rows)
             
             # 날짜 기준 중복 제거 및 정렬
-            df = df.drop_duplicates(subset=['일자']).sort_values(by='일자', ascending=False)
+            df = df.drop_duplicates(subset=['일자']).sort_values(by='일자', ascending=True)
 
             # 요청하신 순서대로 컬럼 재배치 (파일에 없는 컬럼은 제외하고 있는 것만 정렬)
             existing_cols = [col for col in FINAL_ORDER if col in df.columns]
