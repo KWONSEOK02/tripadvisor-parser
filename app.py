@@ -31,29 +31,28 @@ if uploaded_file:
     full_text = "\n".join(relevant_texts)[:40000]
 
     if st.button("AI 분석 시작 (엑셀 생성)"):
-        with st.spinner("Gemini가 데이터를 정밀 분석 중입니다..."):
-            # 3. 요청 가이드를 반영한 프롬프트 (중괄호 오류 해결 버전)
-            # {{ }} 를 사용하여 f-string 오류를 방지했습니다.
-            prompt = f"""
-            첨부한 텍스트에서 트립어드바이저 호텔 실적 데이터를 일별로 추출해서 JSON 배열로 만들어줘.
-            데이터 매핑 가이드는 다음과 같아:
-            
-            - 일자: groupDimensionValue 또는 Date 필드 (YYYY-MM-DD)
-            - Listing impressions: LISTING_IMPRESSION_COUNT
-            - Unique page views: UNIQUE_VISIT_COUNT
-            - Average bubble rating: BUBBLE_RATING
-            - Average ranking: RANKING
-            - Direct referrals: HOTEL_REFERRAL_CLICK_COUNT
-            - Booking clicks: HOTEL_BOOKINGS_CLICK_COUNT
-            - New reviews: REVIEW_COUNT
-            - Average booking length: HOTEL_SEARCH_TRIP_LENGTH_AVERAGE
-            - Average booking lead time: HOTEL_SEARCH_LEAD_TIME_AVERAGE
-            
-            반드시 아래 예시와 같은 순수한 JSON 배열 형식으로만 대답해줘:
-            예시: [{{ "일자": "2024-01-01", "Listing impressions": 120, "Unique page views": 45, "Average bubble rating": 4.5 }}]
-            
-            텍스트: {full_text}
-            """
+            with st.spinner("Gemini 2.5가 10개의 지표를 정밀 분석 중입니다..."):
+                # 프롬프트에 10개 항목을 명시적으로 모두 기재합니다.
+                prompt = f"""
+                첨부한 텍스트에서 트립어드바이저 호텔 실적 데이터를 일별로 추출해서 JSON 배열로 만들어줘.
+                
+                반드시 아래 10개 필드를 모두 포함해야 해(데이터가 전부 0이여도 필드는 10여야함):
+                1. 일자: groupDimensionValue 또는 Date (YYYY-MM-DD)
+                2. Listing impressions: LISTING_IMPRESSION_COUNT
+                3. Unique page views: UNIQUE_VISIT_COUNT
+                4. Average bubble rating: BUBBLE_RATING
+                5. Average ranking: RANKING
+                6. Direct referrals: HOTEL_REFERRAL_CLICK_COUNT
+                7. Booking clicks: HOTEL_BOOKINGS_CLICK_COUNT
+                8. New reviews: REVIEW_COUNT
+                9. Average booking length: HOTEL_SEARCH_TRIP_LENGTH_AVERAGE
+                10. Average booking lead time: HOTEL_SEARCH_LEAD_TIME_AVERAGE
+                
+                결과는 오직 JSON 배열 형식으로만 대답해:
+                예시: [{{ "일자": "2024-01-01", "Listing impressions": 120, ..., "Average booking lead time": 131.5 }}]
+                
+                텍스트: {full_text}
+                """
             
             try:
                 response = model.generate_content(prompt)
